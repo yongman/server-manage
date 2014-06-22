@@ -10,6 +10,15 @@ type Mongo struct {
 	Session  *mgo.Session
 }
 
+var Mon *Mongo
+
+func ClientDefault() *Mongo {
+	if Mon == nil {
+		Mon = NewMongoDefault()
+	}
+	return Mon
+}
+
 func NewMongo(url string, database string) *Mongo {
 	return &Mongo{url, database, nil}
 }
@@ -35,6 +44,9 @@ func (m *Mongo) GetDB() (database *mgo.Database, err error) {
 }
 
 func (m *Mongo) Close() (err error) {
-	m.Session.Close()
+	if m != nil && m.Session != nil {
+		m.Session.Close()
+		m.Session = nil
+	}
 	return nil
 }

@@ -27,7 +27,7 @@ func machineType(mem int64) (mtype string) {
 	return mtype
 }
 
-func UpdateMachine(rawfile string) {
+func UpdateMachine(rawfile string) int {
 	f, err := os.Open(rawfile)
 	if err != nil {
 		log.Fatal("open file failed")
@@ -36,12 +36,11 @@ func UpdateMachine(rawfile string) {
 	defer f.Close()
 	br := bufio.NewReader(f)
 
-	mongo := db.NewMongoDefault()
+	mongo := db.ClientDefault()
 	instance, err := mongo.GetDB()
 	if err != nil {
 		log.Fatal("GetDB failed")
 	}
-	defer mongo.Close()
 	m_collec := instance.C("machine")
 	m_collec.DropCollection()
 
@@ -82,6 +81,7 @@ func UpdateMachine(rawfile string) {
 			machine := db.Machine{}
 			machine.Mtype = machineType(mem.Total)
 			machine.Host = xs[3]
+			machine.Status = true
 			machine.Mem = mem
 
 			machine.Idc = utils.GetIDCByHost(machine.Host)
@@ -95,12 +95,13 @@ func UpdateMachine(rawfile string) {
 	count, err := m_collec.Count()
 	if err != nil {
 		log.Fatal("Count failed")
+		os.Exit(1)
 	}
-	log.Info("===>refreshed ", count, " to database")
+	return count
 }
 
 func LoadMachine() *[]db.Machine {
-	mongo := db.NewMongoDefault()
+	mongo := db.ClientDefault()
 	instance, err := mongo.GetDB()
 	if err != nil {
 		log.Fatal("GetDB failed")

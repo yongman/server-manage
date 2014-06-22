@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-func UpdateService(rawfile string) {
+func UpdateService(rawfile string) int {
 	f, err := os.Open(rawfile)
 	if err != nil {
 		log.Fatal("open file", rawfile, "failed")
@@ -23,17 +23,17 @@ func UpdateService(rawfile string) {
 	//文件格式
 	//10.38.167.56 redis-mco-webrssfeed-shard9 9911 1.8G 680351624 648.83M 696057856 680349280 648.83M slave 2.4.17 redis-mco-webrssfeed-shard9
 	//services := []db.Service{}
-	mongo := db.NewMongoDefault()
+	mongo := db.ClientDefault()
 	instance, err := mongo.GetDB()
 	if err != nil {
 		log.Fatal("GetDB failed")
 		os.Exit(1)
 	}
-	defer mongo.Close()
-
-	instance.DropDatabase()
 
 	s_collec := instance.C("service")
+
+	s_collec.DropCollection()
+
 	var port int
 	var mem int
 	for {
@@ -74,11 +74,12 @@ func UpdateService(rawfile string) {
 			s_collec.Insert(&service)
 		}
 	}
-	log.Info("Service List Refreshed")
+	count, err := s_collec.Count()
+	return count
 }
 
 func LoadService() *[]db.Service {
-	mongo := db.NewMongoDefault()
+	mongo := db.ClientDefault()
 	instance, err := mongo.GetDB()
 	if err != nil {
 		log.Fatal("GetDB failed")

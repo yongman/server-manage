@@ -1,8 +1,12 @@
 package utils
 
 import (
+	"../modules/log"
 	"math/rand"
+	"os"
 	"regexp"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -83,4 +87,46 @@ func RandPercent() (p float32) {
 	rand.Seed(time.Now().UnixNano())
 	p = float32(rand.Intn(65)) / 100.0
 	return
+}
+
+func isAlph(r rune) bool {
+	return r >= 'a' && r <= 'z' || r >= 'A' && r <= 'Z'
+}
+
+//convert cap to KB
+//1G 1GB 512M 512MB 1gb 512mb
+func CapToKB(c string) int64 {
+	if strings.HasSuffix(c, "G") ||
+		strings.HasSuffix(c, "GB") ||
+		strings.HasSuffix(c, "gb") ||
+		strings.HasSuffix(c, "g") {
+		d := strings.TrimRightFunc(c, isAlph)
+		num, err := strconv.Atoi(d)
+		if err != nil {
+			log.Fatal("CapToKB error")
+			os.Exit(1)
+		}
+		log.Info(num)
+		return int64(num) * 1024 * 1024
+	} else if strings.HasSuffix(c, "M") ||
+		strings.HasSuffix(c, "m") ||
+		strings.HasSuffix(c, "MB") ||
+		strings.HasSuffix(c, "mb") {
+		d := strings.TrimRightFunc(c, isAlph)
+		num, err := strconv.Atoi(d)
+		if err != nil {
+			log.Fatal("CapToKB error")
+			os.Exit(1)
+		}
+		log.Info(num)
+		return int64(num) * 1024
+	} else {
+		log.Fatal("size arguments invalid")
+		os.Exit(1)
+	}
+	return 0
+}
+
+func GetPidByDir(dir string) string {
+	return ""
 }

@@ -9,11 +9,10 @@ import (
 )
 
 func getCollection() *mgo.Collection {
-	mongo := db.NewMongoDefault()
+	mongo := db.ClientDefault()
 	instance, err := mongo.GetDB()
 	if err != nil {
 		log.Fatal("GetDB failed")
-		mongo.Close()
 		os.Exit(1)
 	}
 
@@ -41,4 +40,11 @@ func GetHostsByIDC(idc string) *[]string {
 		hosts = append(hosts, host)
 	}
 	return &hosts
+}
+
+func GetMachineByRegion(region string) *[]db.Machine {
+	m_collec := getCollection()
+	machines := []db.Machine{}
+	m_collec.Find(bson.M{"region": region}).All(&machines)
+	return &machines
 }
