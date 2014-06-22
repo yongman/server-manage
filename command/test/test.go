@@ -1,23 +1,23 @@
 package test
 
 import (
-	"../../modules/db"
+	mdao "../../modules/db/machine"
+	//"../../modules/gather/machine"
+	//"../../modules/gather/service"
+	//"../../utils"
 	"../../utils"
 	"fmt"
 	"github.com/codegangsta/cli"
-	"labix.org/v2/mgo/bson"
+	//"labix.org/v2/mgo/bson"
 )
 
 var (
 	Command = cli.Command{
-		Name:      "test",
-		ShortName: "t",
-		Usage:     "test",
-		Action:    testAction,
-		Flags: []cli.Flag{
-			cli.BoolFlag{"yaml", "convert to yaml"},
-			cli.BoolFlag{"json", "convert to json"},
-		},
+		Name:        "test",
+		ShortName:   "t",
+		Usage:       "test",
+		Action:      testAction,
+		Flags:       []cli.Flag{},
 		Description: Usage,
 	}
 
@@ -27,31 +27,30 @@ NAME:
 `
 )
 
-type test1 struct {
-	CommitID string
-	Ip       string
-	Port     int32
-}
-
 func testAction(c *cli.Context) {
-	mongo := db.NewMongo("st01-arch-agent00.st01:27017", "test", "machine")
-	fmt.Println(utils.GenerateUUID())
 
-	instance, err := mongo.GetDB()
-	if err != nil {
-		panic(err)
-	}
+	//machine.UpdateMachine("/home/users/yanming02/workspace/server-manage/host_mem.info")
 
-	instance.DropDatabase()
-	cl := instance.C(mongo.Collection)
+	//machines := machine.LoadMachine()
+	//for _, m := range *machines {
+	//		fmt.Println(m)
+	//	}
+	fmt.Println("=====")
+	mem := mdao.GetMemByHost("yf-arch-redis-wise12.yf01.baidu.com")
+	fmt.Println(mem)
+	fmt.Println(utils.GetIDCByHost("yf-arch-redis-wise12.yf01.baidu.com"))
+	fmt.Println(utils.GetLogicByHost("yf-arch-redis-wise12.yf01.baidu.com"))
+	fmt.Println(utils.GetRegionByHost("yf-arch-redis-wise12.yf01.baidu.com"))
+	fmt.Println(utils.RandPercent())
+	fmt.Println(utils.RandPercent())
+	fmt.Println(len(*mdao.GetHostsByIDC("bj")))
+	/*
+		//service.UpdateService("/home/users/yanming02/workspace/server-manage/host_redis.info")
+		services := service.LoadService()
+		for index, s := range *services {
+			//mem := mdao.GetMemByHost(s.Host)
+			fmt.Println(index, "===>", s.Host)
+		}
+	*/
 
-	cl.Insert(&test1{utils.GenerateUUID(), "192.168.1.2", 1234})
-
-	fmt.Println(cl.Count())
-	result := []test1{}
-	cl.Find(bson.M{}).All(&result)
-
-	fmt.Println(result)
-
-	defer mongo.Close()
 }

@@ -22,4 +22,5 @@ redis alloc tools
 
 func redisAction(c *cli.Context) {
 	fmt.Println("redisAction")
+
 }
