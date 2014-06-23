@@ -44,13 +44,14 @@ func testAction(c *cli.Context) {
 	fmt.Println(utils.RandPercent())
 	fmt.Println(utils.RandPercent())
 	fmt.Println("bj", len(*mdao.GetMachineByRegion("bj")))
-	alloc.AllocMachine(5000000, "bj", 1, "ik")
+	alloc.AllocMachine(5000000, "bj", "ik")
 
 	//service.UpdateService("/home/users/yanming02/workspace/server-manage/host_redis.info")
 	services := service.LoadService()
 	for _, s := range *services {
 		//mem := mdao.GetMemByHost(s.Host)
 		fmt.Println("===>", s)
+		fmt.Println("===>", utils.GetPidByDir(s.DirName))
 	}
 
 }

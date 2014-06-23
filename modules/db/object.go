@@ -6,16 +6,14 @@ import (
 
 type M_Mem struct {
 	//desc in KB
-	Total  int64 //总内存大小
-	Free   int64 //空闲内存
-	Cached int64 //缓存内存
-
-	Allocated int64   //总预分配大小
-	Percent   float32 //规定的预分配标准
+	Total   int64   //总内存大小
+	Free    int64   //空闲内存
+	Cached  int64   //缓存内存
+	Percent float32 //规定的预分配标准
 	//memery box amount
-	//Box1G  int8
-	//Box5G  int8
-	//Box10G int8
+	Box1G  int8
+	Box5G  int8
+	Box10G int8
 }
 
 type M_CPU struct {
@@ -49,7 +47,8 @@ type Service struct {
 	Stype   string        //服务类型
 	Host    string        //服务所在机器
 	Port    int32         //服务端口
-	MaxMem  int64         //服务申请的最大内存
+	MaxMem  int64         //服务申请的内存
+	BoxMem  int64         //实际分配的盒子大小
 	DirName string        //服务的dir
 	UsedMem int64         //使用的内存
 	Role    string        //角色

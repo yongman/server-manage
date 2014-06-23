@@ -73,11 +73,9 @@ func UpdateMachine(rawfile string) int {
 			}
 			mem.Free = (int64)(res * 1024)
 			mem.Cached = -1 //reserved
-			//for test
-			mem.Allocated = int64(utils.RandPercent() * float32(mem.Total))
 
-			mem.Percent = 0.65
-
+			mem.Percent = 0.90 //可以占用总内存的90%
+			mem.Box10G, mem.Box5G, mem.Box1G = utils.DivideBox(int64(float32(mem.Free) * mem.Percent))
 			machine := db.Machine{}
 			machine.Mtype = machineType(mem.Total)
 			machine.Host = xs[3]

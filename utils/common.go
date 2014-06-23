@@ -127,6 +127,44 @@ func CapToKB(c string) int64 {
 	return 0
 }
 
+var (
+	prefixs = []string{
+		"redis-",
+		"redisproxy-",
+		"memcached-",
+	}
+)
+
+//根据dirname得到PID
 func GetPidByDir(dir string) string {
-	return ""
+	var pid string
+	for _, p := range prefixs {
+		if strings.HasPrefix(dir, p) {
+			pid = strings.TrimPrefix(dir, p)
+			//对redis做特殊处理，dirname后有分片信息
+			if p == "redis-" {
+				pos := strings.Index(pid, "-shard")
+				if pos == -1 {
+					continue
+				}
+				rs := []rune(pid)
+				pid = string(rs[0:pos])
+				//log.Info(pid, pos)
+			}
+			break
+		}
+	}
+	return pid
+}
+
+//根据可用空间大小，进行盒子划分，并返回对应盒子的类型 for test
+func DivideBox(mem int64) (box10G int8, box5G int8, box1G int8) {
+	b10 := (mem / 2) / (10 * 1024 * 1024) //50%用来划分10G盒子
+	mem = mem - 10*1024*b10
+
+	b5 := (mem / 2) / (5 * 1024 * 1024) //25%用来划分5G盒子
+	mem = mem - 5*1024*b5
+
+	b1 := mem / (1024 * 1024) //剩余25%用来划分1G盒子
+	return int8(b10), int8(b5), int8(b1)
 }

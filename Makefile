@@ -10,3 +10,6 @@ m:
 s:
 	go build
 	./server-manage g -s /home/users/yanming02/workspace/server-manage/host_redis.info
+r:
+	go build
+	./server-manage redis -m 1G
