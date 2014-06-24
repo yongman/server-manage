@@ -6,6 +6,7 @@ import (
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
 	"os"
+	//"strings"
 )
 
 func getCollection() *mgo.Collection {
@@ -29,6 +30,16 @@ func GetMemByHost(hostname string) *db.M_Mem {
 	return mem
 }
 
+func GetMachineByHost(hostname string) *db.Machine {
+	m_collec := getCollection()
+	machine := db.Machine{}
+	err := m_collec.Find(bson.M{"host": hostname}).One(&machine)
+	if err != nil {
+		return nil
+	}
+	return &machine
+}
+
 //
 func GetHostsByIDC(idc string) *[]string {
 	m_collec := getCollection()
@@ -47,4 +58,9 @@ func GetMachineByRegion(region string) *[]db.Machine {
 	machines := []db.Machine{}
 	m_collec.Find(bson.M{"region": region}).All(&machines)
 	return &machines
+}
+
+func UpdateMachineMem(m *db.Machine) (err error) {
+	m_collec := getCollection()
+	return m_collec.Update(bson.M{"_id": m.ID}, bson.M{"$set": bson.M{"mem": m.Mem}})
 }

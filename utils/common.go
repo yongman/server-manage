@@ -2,6 +2,7 @@ package utils
 
 import (
 	"../modules/log"
+	"fmt"
 	"math/rand"
 	"os"
 	"regexp"
@@ -167,4 +168,14 @@ func DivideBox(mem int64) (box10G int8, box5G int8, box1G int8) {
 
 	b1 := mem / (1024 * 1024) //剩余25%用来划分1G盒子
 	return int8(b10), int8(b5), int8(b1)
+}
+
+func DangerConfirm(info string) {
+	var in string
+	fmt.Println(info, "Danger!!!Please Confirm:[Input Yes to continue]")
+	fmt.Scanf("%s", &in)
+	if in == "Yes" {
+		return
+	}
+	os.Exit(0)
 }

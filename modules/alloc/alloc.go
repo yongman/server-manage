@@ -10,6 +10,12 @@ import (
 	"net"
 )
 
+//分配结果结构
+type Instance struct {
+	IMachine db.Machine
+	IPort    int32
+}
+
 //根据要求从指定的机房选择符合要求的count台机器
 //size:分配机器大小
 //region:区域
@@ -95,4 +101,17 @@ func AllocPort(host string, stype string) int32 {
 		}
 	}
 	return -1
+}
+
+//对指定host对应的盒子计数减一
+func DecBoxOne(host string, boxtype string) (err error) {
+	m := mdao.GetMachineByHost(host)
+	if boxtype == utils.Box10G {
+		m.Mem.Box10G--
+	} else if boxtype == utils.Box5G {
+		m.Mem.Box5G--
+	} else if boxtype == utils.Box1G {
+		m.Mem.Box1G--
+	}
+	return mdao.UpdateMachineMem(m)
 }

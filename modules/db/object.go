@@ -55,3 +55,12 @@ type Service struct {
 	Version string        //版本号
 
 }
+
+//decctibe a commit
+type Commit struct {
+	ID       bson.ObjectId `bson:"_id,omitempty"`
+	CommitID string        //提交ID
+	Host     string
+	Port     int32
+	AllocBox string //分配的盒子类型
+}
