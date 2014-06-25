@@ -17,12 +17,20 @@ type M_Mem struct {
 }
 
 type M_CPU struct {
+	CoreNum int8 //CPU核心总数
 }
 
 type M_Net struct {
+	//desc in KB/S
+	Ntype string
+	Up    int32
+	Down  int32
 }
 
 type M_Disk struct {
+	//desc in MB
+	Total int64 //磁盘总大小
+	Free  int64 //磁盘剩余
 }
 
 //describe a machine's status
@@ -56,7 +64,7 @@ type Service struct {
 
 }
 
-//decctibe a commit
+//describe a commit
 type Commit struct {
 	ID       bson.ObjectId `bson:"_id,omitempty"`
 	CommitID string        //提交ID

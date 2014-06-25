@@ -31,31 +31,44 @@ func DoCommit(host string, port int32, allocBox string) string {
 }
 
 func DropCommit(commitID string) (err error) {
-	host, boxtype, err := cdao.GetHostBoxByID(commitID)
-	if err != nil {
-		return err
-	}
-	err = cdao.DropCommit(commitID)
-	if err != nil {
-		return err
-	}
-	//将该条提交撤销，将box添加到原来的主机
-	m := mdao.GetMachineByHost(host) //获取该主机信息
-	if m != nil {
-		if boxtype == utils.Box10G {
-			m.Mem.Box10G++
-		} else if boxtype == utils.Box5G {
-			m.Mem.Box5G++
-		} else if boxtype == utils.Box1G {
-			m.Mem.Box1G++
+	if commitID == "all" {
+		utils.DangerConfirm("Drop all commits")
+		cids, err := cdao.GetAllCommitID()
+		if err != nil {
+			return err
 		}
-		mdao.UpdateMachineMem(m)
+		for _, cid := range *cids {
+			DropCommit(cid)
+		}
+		return nil
+	} else {
+		host, boxtype, err := cdao.GetHostBoxByID(commitID)
+		if err != nil {
+			return err
+		}
+		err = cdao.DropCommit(commitID)
+		if err != nil {
+			return err
+		}
+		log.Info("Dropping commit", commitID)
+		//将该条提交撤销，将box添加到原来的主机
+		m := mdao.GetMachineByHost(host) //获取该主机信息
+		if m != nil {
+			if boxtype == utils.Box10G {
+				m.Mem.Box10G++
+			} else if boxtype == utils.Box5G {
+				m.Mem.Box5G++
+			} else if boxtype == utils.Box1G {
+				m.Mem.Box1G++
+			}
+			mdao.UpdateMachineMem(m)
+		}
+		return nil
 	}
-	return nil
 }
 
 //打印最新的n条提交
-func ListCommit(n int32) {
+func ListCommit(n int) {
 	res := cdao.QueryLatestCommit(n)
 	//打印
 	for _, r := range *res {
@@ -63,7 +76,9 @@ func ListCommit(n int32) {
 	}
 }
 
+/*
 func DropAllCommits() error {
 	utils.DangerConfirm("Drop all commits")
 	return cdao.DropAll()
 }
+*/

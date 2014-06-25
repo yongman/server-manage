@@ -3,12 +3,10 @@ package utils
 import (
 	"../modules/log"
 	"fmt"
-	"math/rand"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 )
 
 var (
@@ -82,12 +80,6 @@ func GetRegionByHost(host string) string {
 		return region_map[sp[len(sp)-3]]
 	}
 	return ""
-}
-
-func RandPercent() (p float32) {
-	rand.Seed(time.Now().UnixNano())
-	p = float32(rand.Intn(65)) / 100.0
-	return
 }
 
 func isAlph(r rune) bool {

@@ -40,14 +40,35 @@ func DropCommit(uuid string) error {
 	return c_collec.Remove(bson.M{"commitid": uuid})
 }
 
-func QueryLatestCommit(n int32) *[]db.Commit {
+//返回最新的n次提交
+func QueryLatestCommit(n int) *[]db.Commit {
 	latest := []db.Commit{}
 	c_collec := getCollection()
-	c_collec.Find(nil).All(&latest)
+	if n < 0 {
+		c_collec.Find(nil).Sort("-_id").All(&latest)
+	} else {
+		c_collec.Find(nil).Sort("-_id").Limit(n).All(&latest)
+	}
 	return &latest
 }
 
+/*
 func DropAll() error {
 	c_collec := getCollection()
 	return c_collec.DropCollection()
+}
+*/
+//return all commitid,used to delete all commits
+func GetAllCommitID() (*[]string, error) {
+	c_collec := getCollection()
+	commits := []db.Commit{}
+	err := c_collec.Find(nil).All(&commits)
+	if err != nil {
+		return nil, err
+	}
+	cids := make([]string, len(commits))
+	for idx, commit := range commits {
+		cids[idx] = commit.CommitID
+	}
+	return &cids, nil
 }

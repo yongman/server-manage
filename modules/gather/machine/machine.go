@@ -14,13 +14,13 @@ import (
 
 func machineType(mem int64) (mtype string) {
 	if mem > 128*1000*1000 {
-		mtype = "T128G"
+		mtype = utils.MACHINE_128
 	} else if mem > 96*1000*1000 {
-		mtype = "T96G"
+		mtype = utils.MACHINE_96
 	} else if mem > 64*1000*1000 {
-		mtype = "T64G"
+		mtype = utils.MACHINE_64
 	} else if mem > 48*1000*1000 {
-		mtype = "T48G"
+		mtype = utils.MACHINE_48
 	} else {
 		mtype = "unknown"
 	}
@@ -82,6 +82,14 @@ func UpdateMachine(rawfile string) int {
 			machine.Status = true
 			machine.Mem = mem
 
+			//for test
+			//CPU
+			cpu := db.M_CPU{utils.GenerateCPUCore(machine.Mtype)}
+			//Net
+			net := utils.GenerateNet(machine.Mtype)
+			//Disk
+			disk := utils.GenerateDisk(machine.Mtype)
+			machine.Cpu, machine.Net, machine.Disk = cpu, net, disk
 			machine.Idc = utils.GetIDCByHost(machine.Host)
 			machine.Logic = utils.GetLogicByHost(machine.Host)
 			machine.Region = utils.GetRegionByHost(machine.Host)

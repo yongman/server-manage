@@ -7,6 +7,7 @@ import (
 	"../../modules/commit"
 	"../../modules/log"
 	"../../utils"
+	"../../utils/filter"
 	"fmt"
 	"github.com/codegangsta/cli"
 	"os"
@@ -27,6 +28,7 @@ var (
 			cli.IntFlag{"hz", 0, "amount alloc from machineroom in hangzhou"},
 			cli.IntFlag{"nj", 0, "amount alloc from machineroom in nanjing"},
 			cli.StringFlag{"cid", "", "the commit id to drop"},
+			cli.IntFlag{"n", 0, "used by action list. list the n newest commits"},
 		},
 		Description: Usage,
 	}
@@ -34,7 +36,6 @@ var (
 Name:
 redis alloc tools
         `
-	REDIS_NAME = string("redis")
 )
 
 //用于排序
@@ -62,7 +63,6 @@ type region struct {
 }
 
 func redisAction(c *cli.Context) {
-	fmt.Println("redisAction")
 	act := c.String("action")
 	if act == "" {
 		log.Fatal("--action must be assign[list,commit,drop]")
@@ -92,7 +92,7 @@ func redisAction(c *cli.Context) {
 			results := []alloc.Instance{}
 			log.Info(r)
 			if r.cnt != 0 {
-				mach := alloc.AllocMachine(size, r.name, pid)
+				mach := alloc.AllocRedisMachine(size, r.name, pid)
 				fns := make(freeNs, len(*mach))
 				for idx, ma := range *mach {
 					fns[idx] = freeN{idx, float64(ma.Mem.Free) / float64(ma.Mem.Total)}
@@ -114,7 +114,7 @@ func redisAction(c *cli.Context) {
 						break
 					}
 					ma := (*mach)[fn.index]
-					port := alloc.AllocPort(ma.Host, REDIS_NAME)
+					port := alloc.AllocPort(ma.Host, utils.REDIS_NAME)
 					if port == -1 {
 						loop++ //端口分配失败，则继续在候选机器中选择
 						continue
@@ -137,14 +137,15 @@ func redisAction(c *cli.Context) {
 		if comm == "Yes" {
 			for _, cra := range resultall {
 				for _, cr := range cra {
-					commit.DoCommit(cr.IMachine.Host, cr.IPort, utils.GetBoxType(size))
+					commit.DoCommit(cr.IMachine.Host, cr.IPort, filter.GetBoxType(size))
 					//log.Info(cr)
 				}
 			}
 		}
 		//打印提交结果
 	} else if act == "list" {
-		commit.ListCommit(1)
+		n := c.Int("n")
+		commit.ListCommit(n)
 	} else if act == "drop" {
 		cid := c.String("cid")
 		if cid == "" {
@@ -154,6 +155,7 @@ func redisAction(c *cli.Context) {
 		err := commit.DropCommit(cid)
 		if err != nil {
 			log.Fatal("Drop Commit Failed")
+			log.Fatal(err)
 		}
 	}
 	os.Exit(0)

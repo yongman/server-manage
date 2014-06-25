@@ -31,3 +31,15 @@ func PidInHost(pid string, host string) bool {
 	}
 	return false
 }
+
+//返回指定机器上Proxy数目
+func GetProxyNum(host string) (int, error) {
+	s_collec := getCollection()
+	return s_collec.Find(bson.M{"host": host, "stype": utils.REDISPROXY_NAME}).Count()
+}
+
+//返回指定机器上的redis数目
+func GetRedisNum(host string) (int, error) {
+	s_collec := getCollection()
+	return s_collec.Find(bson.M{"host": host, "stype": utils.REDIS_NAME}).Count()
+}

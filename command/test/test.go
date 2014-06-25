@@ -44,7 +44,7 @@ func testAction(c *cli.Context) {
 	fmt.Println(utils.RandPercent())
 	fmt.Println(utils.RandPercent())
 	fmt.Println("bj", len(*mdao.GetMachineByRegion("bj")))
-	alloc.AllocMachine(5000000, "bj", "ik")
+	alloc.AllocRedisMachine(5000000, "bj", "ik")
 
 	//service.UpdateService("/home/users/yanming02/workspace/server-manage/host_redis.info")
 	services := service.LoadService()

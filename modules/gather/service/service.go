@@ -48,7 +48,7 @@ func UpdateService(rawfile string) int {
 			service := db.Service{}
 			prefix := strings.Split(xs[1], "-")[0]
 			switch prefix {
-			case "redisproxy":
+			case utils.REDISPROXY_NAME:
 				//redisproxy
 				service.Stype = prefix
 				service.Host = xs[3]
@@ -56,7 +56,7 @@ func UpdateService(rawfile string) int {
 				service.Port = int32(port)
 				service.MaxMem = -1
 				service.DirName = xs[1]
-			case "redis":
+			case utils.REDIS_NAME:
 				service.Stype = prefix
 				service.Host = xs[11]
 				port, _ = strconv.Atoi(xs[2])
