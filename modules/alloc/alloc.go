@@ -6,7 +6,6 @@ import (
 	sdao "../../modules/db/service"
 	"../../utils"
 	"../../utils/filter"
-	"../log"
 	"fmt"
 	"net"
 )
@@ -73,7 +72,6 @@ func AllocRedisproxyMachine(region string, pid string) *[]db.Machine {
 	machines := mdao.GetMachineByRegion(region)
 	result := []db.Machine{}
 	for _, m := range *machines {
-		log.Info(m.Host)
 		mem := m.Mem
 		//主机被封禁
 		if m.Status == false {
@@ -82,24 +80,24 @@ func AllocRedisproxyMachine(region string, pid string) *[]db.Machine {
 		//CPU限制filter
 		cpu := m.Cpu
 		if filter.FilterCPU(utils.REDISPROXY_NAME, m.Host, &cpu) {
-			log.Info(m.Host, "cpu filter")
+			//log.Info(m.Host, "cpu filter")
 			continue
 		}
 		//网络限制filter
 		net := m.Net
 		if filter.FilterNet(utils.REDISPROXY_NAME, &net) {
-			log.Info(m.Host, "net filter")
+			//log.Info(m.Host, "net filter")
 			continue
 		}
 		//磁盘限制filter
 		disk := m.Disk
 		if filter.FilterDisk(utils.REDISPROXY_NAME, &disk) {
-			log.Info(m.Host, "disk filter")
+			//log.Info(m.Host, "disk filter")
 			continue
 		}
 		//内存限制filter
 		if filter.FilterMem(utils.REDISPROXY_NAME, &mem, 0) {
-			log.Info(m.Host, "mem filter")
+			//log.Info(m.Host, "mem filter")
 			continue
 		}
 

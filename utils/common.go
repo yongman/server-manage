@@ -82,6 +82,14 @@ func GetRegionByHost(host string) string {
 	return ""
 }
 
+func GetRoomByHost(host string) string {
+	sp := regexp.MustCompile("[-]|[.]").Split(host, -1)
+	if len(sp) >= 3 {
+		return sp[len(sp)-3]
+	}
+	return ""
+}
+
 func isAlph(r rune) bool {
 	return r >= 'a' && r <= 'z' || r >= 'A' && r <= 'Z'
 }
@@ -99,7 +107,6 @@ func CapToKB(c string) int64 {
 			log.Fatal("CapToKB error")
 			os.Exit(1)
 		}
-		log.Info(num)
 		return int64(num) * 1024 * 1024
 	} else if strings.HasSuffix(c, "M") ||
 		strings.HasSuffix(c, "m") ||
@@ -111,7 +118,6 @@ func CapToKB(c string) int64 {
 			log.Fatal("CapToKB error")
 			os.Exit(1)
 		}
-		log.Info(num)
 		return int64(num) * 1024
 	} else {
 		log.Fatal("size arguments invalid")

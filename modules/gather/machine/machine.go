@@ -91,6 +91,7 @@ func UpdateMachine(rawfile string) int {
 			disk := utils.GenerateDisk(machine.Mtype)
 			machine.Cpu, machine.Net, machine.Disk = cpu, net, disk
 			machine.Idc = utils.GetIDCByHost(machine.Host)
+			machine.Mroom = utils.GetRoomByHost(machine.Host)
 			machine.Logic = utils.GetLogicByHost(machine.Host)
 			machine.Region = utils.GetRegionByHost(machine.Host)
 

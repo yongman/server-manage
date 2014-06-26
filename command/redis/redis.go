@@ -5,6 +5,7 @@ import (
 	"../../modules/alloc"
 	//"../../modules/db"
 	"../../modules/commit"
+	"../../modules/fmtoutput"
 	"../../modules/log"
 	"../../utils"
 	"../../utils/filter"
@@ -90,18 +91,16 @@ func redisAction(c *cli.Context) {
 		for r_idx, r := range regions {
 			//存放分配结果
 			results := []alloc.Instance{}
-			log.Info(r)
 			if r.cnt != 0 {
 				mach := alloc.AllocRedisMachine(size, r.name, pid)
 				fns := make(freeNs, len(*mach))
+
+				//fmtoutput.PrintMachineHeader()
 				for idx, ma := range *mach {
 					fns[idx] = freeN{idx, float64(ma.Mem.Free) / float64(ma.Mem.Total)}
-					log.Info(ma.Host, ma.Status, ma.Mem)
-					//log.Info(ma.Host, "Getting a port....")
-					//log.Info(alloc.AllocPort(ma.Host, REDIS_NAME))
+					//log.Info(ma.Host, ma.Status, ma.Mem)
 				}
 
-				log.Info("Total:", len(*mach), len(fns))
 				//对列表进行按redis策略进行排序
 				sort.Sort(fns)
 				if len(fns) < r.cnt {
@@ -121,16 +120,25 @@ func redisAction(c *cli.Context) {
 					}
 					res := alloc.Instance{ma, port}
 					results = append(results, res)
-					log.Info("Alloc:", res.IMachine.Host, res.IPort)
+					//fmtoutput.PrintAlloc(i+1, &ma, port)
 				}
 				if len(results) < r.cnt {
 					log.Info("Not Enough Port")
 					os.Exit(1)
 				}
-				log.Info(len(results))
 				resultall[r_idx] = results
 			}
 		}
+		//打印分配结果
+		fmtoutput.PrintAllocHeader()
+		var idx int = 1
+		for _, cra := range resultall {
+			for _, cr := range cra {
+				fmtoutput.PrintAlloc(idx, &(cr.IMachine), cr.IPort)
+				idx++
+			}
+		}
+
 		var comm string = "no"
 		fmt.Println("Commit:Yes|no [default:no]")
 		fmt.Scanf("%s", &comm)
@@ -142,7 +150,7 @@ func redisAction(c *cli.Context) {
 				}
 			}
 		}
-		//打印提交结果
+		//打印功能
 	} else if act == "list" {
 		n := c.Int("n")
 		commit.ListCommit(n)

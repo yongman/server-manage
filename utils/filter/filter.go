@@ -121,7 +121,6 @@ func FilterRedisNum(host string, max int) bool {
 		log.Fatal(err)
 		return true
 	}
-	log.Info(host, "Redis num:", num)
 	if num >= max {
 		return true
 	} else {
