@@ -3,6 +3,7 @@ package test
 import (
 	"../../modules/alloc"
 	mdao "../../modules/db/machine"
+	"../../modules/fmtoutput"
 	"../../modules/gather/machine"
 	"../../modules/gather/service"
 	"../../utils"
@@ -53,5 +54,6 @@ func testAction(c *cli.Context) {
 		fmt.Println("===>", s)
 		fmt.Println("===>", utils.GetPidByDir(s.DirName))
 	}
+	fmtoutput.PrintCommitHeader()
 
 }

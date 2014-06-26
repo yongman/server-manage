@@ -9,7 +9,7 @@ import (
 	mdao "../../modules/db/machine"
 	"../../modules/log"
 	"../../utils"
-	"fmt"
+	"../fmtoutput"
 )
 
 func DoCommit(host string, port int32, allocBox string) string {
@@ -71,8 +71,9 @@ func DropCommit(commitID string) (err error) {
 func ListCommit(n int) {
 	res := cdao.QueryLatestCommit(n)
 	//打印
+	fmtoutput.PrintCommitHeader()
 	for _, r := range *res {
-		fmt.Println(r)
+		fmtoutput.PrintCommit(&r)
 	}
 }
 
