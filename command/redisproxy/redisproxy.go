@@ -3,6 +3,7 @@ package redisproxy
 import (
 	//mdao "../../modules/db/machine"
 	"../../modules/alloc"
+	"../../modules/fmtoutput"
 	//"../../modules/db"
 	"../../modules/log"
 	"../../utils"
@@ -72,18 +73,18 @@ func redisproxyAction(c *cli.Context) {
 	for r_idx, r := range regions {
 		//存放分配结果
 		results := []alloc.Instance{}
-		log.Info(r)
+		//log.Info(r)
 		if r.cnt != 0 {
 			mach := alloc.AllocRedisproxyMachine(r.name, pid)
 			fns := make(freeNs, len(*mach))
 			for idx, ma := range *mach {
 				fns[idx] = freeN{idx, float64(ma.Mem.Free) / float64(ma.Mem.Total)}
-				log.Info(ma)
+				//log.Info(ma)
 				//log.Info(ma.Host, "Getting a port....")
 				//log.Info(alloc.AllocPort(ma.Host, REDIS_NAME))
 			}
 
-			log.Info("Total:", len(*mach), len(fns))
+			log.Info("Avaliable:", len(*mach), "in", r.name)
 			//对列表进行按redis策略进行排序
 			sort.Sort(fns)
 			if len(fns) < r.cnt {
@@ -103,15 +104,24 @@ func redisproxyAction(c *cli.Context) {
 				}
 				res := alloc.Instance{ma, port}
 				results = append(results, res)
-				log.Info("Alloc:", res.IMachine.Host, res.IPort)
+				//log.Info("Alloc:", res.IMachine.Host, res.IPort)
 			}
 			if len(results) < r.cnt {
 				log.Info("Not Enough Port")
 				os.Exit(1)
 			}
-			log.Info(len(results))
+			//log.Info(len(results))
 			resultall[r_idx] = results
 		}
 	}
+	//打印分配结果
+	var idx int = 1
+	for _, rall := range resultall {
+		for _, r := range rall {
+			fmtoutput.PrintAlloc(idx, &(r.IMachine), r.IPort)
+			idx++
+		}
+	}
+
 	os.Exit(0)
 }

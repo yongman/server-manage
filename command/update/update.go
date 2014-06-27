@@ -1,19 +1,19 @@
-package gather
+package update
 
 import (
-	"../../modules/gather/machine"
-	"../../modules/gather/service"
 	"../../modules/log"
+	"../../modules/update/machine"
+	"../../modules/update/service"
 	//"../../utils"
 	"github.com/codegangsta/cli"
 )
 
 var (
 	Command = cli.Command{
-		Name:      "gather",
-		ShortName: "g",
-		Usage:     "gather [-s service.info] [-m machine.info]",
-		Action:    gatherAction,
+		Name:      "update",
+		ShortName: "u",
+		Usage:     "update [-s service.info] [-m machine.info]",
+		Action:    updateAction,
 		Flags: []cli.Flag{
 			cli.StringFlag{"s", "", "service info raw file"},
 			cli.StringFlag{"m", "", "machine info raw file"},
@@ -21,7 +21,7 @@ var (
 	}
 )
 
-func gatherAction(c *cli.Context) {
+func updateAction(c *cli.Context) {
 	s := c.String("s")
 	if s != "" {
 		count := service.UpdateService(s)

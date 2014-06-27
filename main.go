@@ -1,11 +1,11 @@
 package main
 
 import (
-	"./command/gather"
 	"./command/print"
 	"./command/redis"
 	"./command/redisproxy"
 	"./command/test"
+	"./command/update"
 	//"./modules/db"
 	"github.com/codegangsta/cli"
 	"os"
@@ -16,7 +16,7 @@ func main() {
 		test.Command,
 		redis.Command,
 		redisproxy.Command,
-		gather.Command,
+		update.Command,
 		print.Command,
 	}
 

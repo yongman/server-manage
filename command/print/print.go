@@ -1,8 +1,8 @@
 package print
 
 import (
-	"../../modules/gather/machine"
-	"../../modules/gather/service"
+	"../../modules/update/machine"
+	"../../modules/update/service"
 	//"../../utils"
 	"../../modules/fmtoutput"
 	"github.com/codegangsta/cli"

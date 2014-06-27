@@ -27,7 +27,7 @@ func PrintAllocHeader() {
 	fmt.Println("Alloc Result:")
 }
 func PrintAlloc(index int, m *db.Machine, port int32) {
-	fmt.Printf("%3d: %s:%d\n", index, strings.TrimRight(m.Host, ".baidu.com"), port)
+	fmt.Printf("%3d: %30s:%5d\n", index, strings.TrimRight(m.Host, ".baidu.com"), port)
 }
 
 func PrintServiceHeader() {

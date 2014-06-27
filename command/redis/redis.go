@@ -1,9 +1,7 @@
 package redis
 
 import (
-	//mdao "../../modules/db/machine"
 	"../../modules/alloc"
-	//"../../modules/db"
 	"../../modules/commit"
 	"../../modules/fmtoutput"
 	"../../modules/log"
@@ -22,7 +20,7 @@ var (
 		Usage:     "redis",
 		Action:    redisAction,
 		Flags: []cli.Flag{
-			cli.StringFlag{"action", "", "must be one of [list,alloc,drop]"},
+			//cli.StringFlag{"action", "", "must be one of [list,alloc,drop]"},
 			cli.StringFlag{"d", "", "pid, if provided, will avoid the servers that have deployed instances of this pid"},
 			cli.StringFlag{"m", "", "memory size want to alloc, eg. 512M 1G"},
 			cli.IntFlag{"bj", 0, "amount alloc from machineroom in beijing"},
@@ -64,7 +62,10 @@ type region struct {
 }
 
 func redisAction(c *cli.Context) {
-	act := c.String("action")
+	if len(os.Args) < 3 {
+		log.Info("Usage: server-manage redis list|alloc|drop")
+	}
+	act := os.Args[2]
 	if act == "" {
 		log.Fatal("--action must be assign[list,commit,drop]")
 		os.Exit(0)
