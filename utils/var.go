@@ -1,7 +1,7 @@
 package utils
 
 //Commom vars put in this file
-var (
+const (
 	REDIS_NAME      string = "redis"
 	REDISPROXY_NAME string = "redisproxy"
 
@@ -22,4 +22,9 @@ var (
 	MACHINE_64  string = "T64G"
 	MACHINE_96  string = "T96G"
 	MACHINE_128 string = "T128G"
+
+	//机器中封禁状态标志位定义
+	REDIS_POS      uint8 = 0
+	REDISPROXY_POS uint8 = 1
+	MEMCACHE_POS   uint8 = 2
 )

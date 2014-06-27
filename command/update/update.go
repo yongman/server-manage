@@ -1,6 +1,7 @@
 package update
 
 import (
+	"../../modules/commit"
 	"../../modules/log"
 	"../../modules/update/machine"
 	"../../modules/update/service"
@@ -26,6 +27,9 @@ func updateAction(c *cli.Context) {
 	if s != "" {
 		count := service.UpdateService(s)
 		log.Info("update", count, " services into db")
+		log.Info("refreshing commits....")
+		//扫描commit表，扫描对应的commit是否存在服务表中，不存在自动撤销相应commit
+		commit.RefreshCommit()
 	}
 
 	m := c.String("m")

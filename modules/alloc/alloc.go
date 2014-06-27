@@ -27,7 +27,7 @@ func AllocRedisMachine(size int64, region string, pid string) *[]db.Machine {
 	for _, m := range *machines {
 		mem := m.Mem
 		//主机被封禁
-		if m.Status == false {
+		if (m.Status & (1 << utils.REDIS_POS)) != 0 {
 			continue
 		}
 		//redis数目检查
@@ -74,7 +74,7 @@ func AllocRedisproxyMachine(region string, pid string) *[]db.Machine {
 	for _, m := range *machines {
 		mem := m.Mem
 		//主机被封禁
-		if m.Status == false {
+		if (m.Status & (1 << utils.REDISPROXY_POS)) != 0 {
 			continue
 		}
 		//CPU限制filter

@@ -43,3 +43,18 @@ func GetRedisNum(host string) (int, error) {
 	s_collec := getCollection()
 	return s_collec.Find(bson.M{"host": host, "stype": utils.REDIS_NAME}).Count()
 }
+
+//返回是否存在该实例
+func ServiceExist(host string, port int32) bool {
+	s_collec := getCollection()
+	cnt, err := s_collec.Find(bson.M{"host": host, "port": port}).Count()
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	}
+	if cnt != 0 {
+		return true
+	} else {
+		return false
+	}
+}

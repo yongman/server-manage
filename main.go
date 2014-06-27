@@ -1,10 +1,12 @@
 package main
 
 import (
+	"./command/ban"
 	"./command/print"
 	"./command/redis"
 	"./command/redisproxy"
 	"./command/test"
+	"./command/unban"
 	"./command/update"
 	//"./modules/db"
 	"github.com/codegangsta/cli"
@@ -18,6 +20,8 @@ func main() {
 		redisproxy.Command,
 		update.Command,
 		print.Command,
+		ban.Command,
+		unban.Command,
 	}
 
 	app := cli.NewApp()

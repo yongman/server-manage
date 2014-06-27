@@ -7,6 +7,7 @@ import (
 	"../../modules/db"
 	cdao "../../modules/db/commit"
 	mdao "../../modules/db/machine"
+	sdao "../../modules/db/service"
 	"../../modules/log"
 	"../../utils"
 	"../fmtoutput"
@@ -74,6 +75,18 @@ func ListCommit(n int) {
 	fmtoutput.PrintCommitHeader()
 	for _, r := range *res {
 		fmtoutput.PrintCommit(&r)
+	}
+}
+
+func RefreshCommit() {
+	res := cdao.QueryLatestCommit(-1)
+	for _, r := range *res {
+		//扫描所有的commit
+		if sdao.ServiceExist(r.Host, r.Port) == false {
+			//不存在该服务，撤销commit
+			log.Info("Dropping commit:", r.CommitID)
+			cdao.DropCommit(r.CommitID)
+		}
 	}
 }
 

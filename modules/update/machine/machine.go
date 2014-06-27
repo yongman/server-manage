@@ -3,10 +3,10 @@ package machine
 import (
 	"../../../utils"
 	"../../db"
+	mdao "../../db/machine"
 	"../../log"
 	"bufio"
 	"io"
-	"labix.org/v2/mgo/bson"
 	"os"
 	"strconv"
 	"strings"
@@ -79,7 +79,7 @@ func UpdateMachine(rawfile string) int {
 			machine := db.Machine{}
 			machine.Mtype = machineType(mem.Total)
 			machine.Host = xs[3]
-			machine.Status = true
+			machine.Status = 0
 			machine.Mem = mem
 
 			//for test
@@ -108,15 +108,53 @@ func UpdateMachine(rawfile string) int {
 }
 
 func LoadMachine() *[]db.Machine {
-	mongo := db.ClientDefault()
-	instance, err := mongo.GetDB()
-	if err != nil {
-		log.Fatal("GetDB failed")
-	}
-	defer mongo.Close()
-	m_collec := instance.C("machine")
+	return mdao.GetAllMachine()
+}
 
-	machines := &[]db.Machine{}
-	m_collec.Find(bson.M{}).All(machines)
-	return machines
+//手动调整主机的内存box
+func UpdateMachineBox(host string, b1g int8, b5g int8, b10g int8) error {
+	m := mdao.GetMachineByHost(host)
+	if m != nil {
+		if b1g >= 0 {
+			m.Mem.Box1G = b1g
+		}
+		if b5g >= 0 {
+			m.Mem.Box5G = b5g
+		}
+		if b10g >= 0 {
+			m.Mem.Box10G = b10g
+		}
+		mdao.UpdateMachineMem(m)
+	}
+	return nil
+}
+
+//将机器对具体的服务进行封禁
+func BanMachine(host string, pos uint8) bool {
+	if pos < 0 || pos > 31 {
+		return false
+	}
+	m := mdao.GetMachineByHost(host)
+	if m != nil {
+		m.Status = m.Status | 1<<pos
+		mdao.UpdateMachineStatus(m)
+		return true
+	} else {
+		return false
+	}
+}
+
+//解封
+func UnBanMachine(host string, pos uint8) bool {
+	if pos < 0 || pos > 31 {
+		return false
+	}
+	m := mdao.GetMachineByHost(host)
+	if m != nil {
+		m.Status = m.Status & ^(1 << pos)
+		mdao.UpdateMachineStatus(m)
+		return true
+	} else {
+		return false
+	}
 }

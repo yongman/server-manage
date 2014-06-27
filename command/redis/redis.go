@@ -5,19 +5,21 @@ import (
 	"../../modules/commit"
 	"../../modules/fmtoutput"
 	"../../modules/log"
+	"../../modules/update/machine"
 	"../../utils"
 	"../../utils/filter"
 	"fmt"
 	"github.com/codegangsta/cli"
 	"os"
 	"sort"
+	"strings"
 )
 
 var (
 	Command = cli.Command{
 		Name:      "redis",
 		ShortName: "r",
-		Usage:     "redis",
+		Usage:     "redis [list|alloc|drop|update]",
 		Action:    redisAction,
 		Flags: []cli.Flag{
 			//cli.StringFlag{"action", "", "must be one of [list,alloc,drop]"},
@@ -27,7 +29,11 @@ var (
 			cli.IntFlag{"hz", 0, "amount alloc from machineroom in hangzhou"},
 			cli.IntFlag{"nj", 0, "amount alloc from machineroom in nanjing"},
 			cli.StringFlag{"cid", "", "the commit id to drop"},
-			cli.IntFlag{"n", 0, "used by action list. list the n newest commits"},
+			cli.IntFlag{"n", 0, "used with list. list the n newest commits"},
+			cli.StringFlag{"host", "", "used with update. the hostname want to update"},
+			cli.IntFlag{"b1g", -1, "used with update. the amount of Box1G"},
+			cli.IntFlag{"b5g", -1, "used with update. the amount of Box5G"},
+			cli.IntFlag{"b10g", -1, "used with update. the amount of Box10G"},
 		},
 		Description: Usage,
 	}
@@ -63,11 +69,12 @@ type region struct {
 
 func redisAction(c *cli.Context) {
 	if len(os.Args) < 3 {
-		log.Info("Usage: server-manage redis list|alloc|drop")
+		log.Info("Usage: server-manage redis list|alloc|drop|update")
+		os.Exit(0)
 	}
 	act := os.Args[2]
 	if act == "" {
-		log.Fatal("--action must be assign[list,commit,drop]")
+		log.Fatal("must be list,commit,drop,update")
 		os.Exit(0)
 	}
 	m := c.String("m")
@@ -166,6 +173,20 @@ func redisAction(c *cli.Context) {
 			log.Fatal("Drop Commit Failed")
 			log.Fatal(err)
 		}
+	} else if act == "update" {
+		host := c.String("host")
+		b1g := c.Int("b1g")
+		b5g := c.Int("b5g")
+		b10g := c.Int("b10g")
+		if host == "" || b1g < -1 || b5g < -1 || b10g < -1 {
+			log.Fatal("arg error: -host <hostname> [-b1g m] [-b5g n] [-b10g k]")
+			os.Exit(0)
+		}
+		if strings.HasSuffix(host, ".baidu.com") == false {
+			host = fmt.Sprintf("%s%s", host, ".baidu.com")
+		}
+		machine.UpdateMachineBox(host, int8(b1g), int8(b5g), int8(b10g))
+		log.Info(host, "MemBox updated finish")
 	}
 	os.Exit(0)
 }

@@ -38,7 +38,7 @@ type Machine struct {
 	ID     bson.ObjectId `bson:"_id,omitempty"`
 	Mtype  string        //机器类型
 	Host   string        //主机名
-	Status bool          //主机状态，是否被封禁
+	Status int32         //主机状态，bit1:redis   bit2:redisproxy
 	Mroom  string        //机房
 	Logic  string        //逻辑机房
 	Region string        //地域

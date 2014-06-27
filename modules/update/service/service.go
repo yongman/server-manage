@@ -75,6 +75,10 @@ func UpdateService(rawfile string) int {
 		}
 	}
 	count, err := s_collec.Count()
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	}
 	return count
 }
 
